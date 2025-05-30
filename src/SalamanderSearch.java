@@ -1,9 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class SalamanderSearch {
-    public static void main(String[] args) {
-        char[][] enclosure1 = {
+
+
+
+public class SalamanderSearch 
+{
+    public static void main(String[] args) 
+    {
+        char[][] enclosure1 = 
+        {
+            //we start at the s with salamanderlocation method
             {'.','.','.','.','.','.'},
             {'W','.','W','W','.','.'},
             {'.','.','W','.','.','W'},
@@ -11,7 +18,8 @@ public class SalamanderSearch {
             {'W','.','W','s','.','.'},
         };
 
-        char[][] enclosure2 = {
+        char[][] enclosure2 = 
+        {
             {'.','.','.','.','.','.'},
             {'W','W','W','W','s','.'},
             {'.','.','W','.','.','W'},
@@ -43,7 +51,106 @@ public class SalamanderSearch {
      * @return whether the salamander can reach the food
      * @throws IllegalArgumentException if the enclosure does not contain a salamander
      */
-    public static boolean canReach(char[][] enclosure) {
+    public static boolean canReach(char[][] enclosure) 
+    {
+        int[] start = salamanderLocation(enclosure);
+        boolean[][] visited = new  boolean[enclosure.length][enclosure[0].length];
+
+        return canReach(enclosure, start, visited);
+    }
+
+    public static boolean canReach(char[][] enclosure, int[] current, boolean[][] visited)
+    {
+        int curR = current[0];
+        int curC = current[1];
+
+        if (enclosure[curR][curC] == 'f')
+        {
+            return true;
+        }
+
+           if (visited[curR][curC])
+        {
+            return false;
+        }
+
+        //set to be true and call possible moves method
+        visited[curR][curC] = true;
+        List<int[]> neighbors = possibleMoves(enclosure, current);
+
+        for(int[] neighbor : neighbors)
+        {
+            if(canReach(enclosure, neighbor, visited))
+            {
+                return true;
+            }
+        }
         return false;
     }
+
+    //this tells us what paths are available
+    public static List<int[]> possibleMoves(char[][] enclosure, int[] current)
+    {
+        List<int[]> moves = new ArrayList<>();
+        int curR = current[0];
+        int curC = current[1];
+
+        //up
+        int newR = curR - 1;
+        int newC = curC;
+        if (newR >= 0 && enclosure[newR][newC] != 'W')
+        {
+            moves.add(new int[] { newR, newC });
+        }
+
+         //down
+        newR = curR + 1;
+        newC = curC;
+        if (newR < enclosure.length && enclosure[newR][newC] != 'W')
+        {
+            moves.add(new int[] { newR, newC });
+        }
+
+
+         //left
+        newR = curR;
+        newC = curC - 1;
+        if (newC >= 0 && enclosure[newR][newC] != 'W')
+        {
+            moves.add(new int[] { newR, newC });
+        }
+
+               //right
+        newR = curR;
+        newC = curC + 1;
+        if (newC < enclosure[newR].length && enclosure[newR][newC] != 'W')
+        {
+            moves.add(new int[] { newR, newC });
+        }
+
+        return moves;
+
+
+
+    }
+
+    //this finds the salamander location
+    public static int[] salamanderLocation(char[][] enclosure)
+    {
+        //iterates rows
+        for (int r = 0; r < enclosure.length; r++) 
+        {
+            //iterates columns
+            for(int c = 0; c < enclosure[r].length; c++)
+            {
+                if(enclosure[r][c] == 's')
+                    {
+                        int[] location = new int[] {r, c};
+                        return location;
+                    }
+            }
+        }
+        throw new IllegalArgumentException("No salamander present");
+    }
+    
 }
